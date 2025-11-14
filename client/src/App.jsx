@@ -16,6 +16,7 @@ import { Brightness4, Brightness7, Search as SearchIcon } from '@mui/icons-mater
 import AdvancedSearchForm from './components/KeywordSearch/AdvancedSearchForm'
 import AdvancedKeywordTable from './components/DataTable/AdvancedKeywordTable'
 import PortfolioView from './components/Dashboard/PortfolioView'
+import HistoryDashboard from './components/Dashboard/HistoryDashboard'
 import StatsCards from './components/Dashboard/StatsCards'
 import TrendChart from './components/Charts/TrendChart'
 import KGRDistribution from './components/Charts/KGRDistribution'
@@ -120,6 +121,9 @@ function App() {
               <ScatterChart keywords={keywords} />
             </>
           )}
+
+          {/* 히스토리 대시보드 */}
+          <HistoryDashboard />
         </Container>
       </Box>
     </ThemeProvider>

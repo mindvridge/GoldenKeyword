@@ -49,6 +49,10 @@ export const initDatabase = async () => {
         difficulty INTEGER,
         kgr DECIMAL(5,4),
         kei INTEGER,
+        allintitle INTEGER,
+        serp_difficulty INTEGER,
+        trend VARCHAR(50),
+        intent VARCHAR(50),
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       );
     `)
@@ -75,6 +79,18 @@ export const initDatabase = async () => {
 
     await pool.query(`
       CREATE INDEX IF NOT EXISTS idx_user_keywords ON saved_keywords(user_id);
+    `)
+
+    await pool.query(`
+      CREATE INDEX IF NOT EXISTS idx_created_at ON keyword_metrics(created_at DESC);
+    `)
+
+    await pool.query(`
+      CREATE INDEX IF NOT EXISTS idx_kgr ON keyword_metrics(kgr ASC);
+    `)
+
+    await pool.query(`
+      CREATE INDEX IF NOT EXISTS idx_keyword_created ON keyword_metrics(keyword_text, created_at DESC);
     `)
 
     console.log('✅ Database tables initialized')

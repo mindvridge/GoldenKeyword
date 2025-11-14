@@ -6,6 +6,7 @@ import express from 'express'
 import * as AdvancedKeywordService from '../services/advancedKeywordService.js'
 import * as LongtailService from '../services/longtailKeywordService.js'
 import * as AIService from '../services/aiKeywordService.js'
+import * as HistoryService from '../services/historyService.js'
 
 const router = express.Router()
 
@@ -35,6 +36,29 @@ router.post('/analyze', async (req, res, next) => {
         success: false,
         message: '키워드 분석에 실패했습니다. API 설정을 확인해주세요.',
       })
+    }
+
+    // 히스토리에 자동 저장 (백그라운드)
+    if (analysis) {
+      try {
+        await HistoryService.saveKeywordHistory({
+          keyword: analysis.keyword,
+          searchVolume: analysis.searchVolume,
+          cpc: analysis.cpc,
+          competition: analysis.competition,
+          difficulty: analysis.serpAnalysis?.serpDifficulty || null,
+          kgr: analysis.kgr,
+          kei: analysis.kei,
+          allintitle: analysis.allintitleCount,
+          serpDifficulty: analysis.serpAnalysis?.serpDifficulty || null,
+          trend: analysis.trendData?.trend || null,
+          intent: analysis.intentAnalysis?.intent || null,
+        })
+        console.log('✅ Keyword history saved:', analysis.keyword)
+      } catch (historyError) {
+        // 히스토리 저장 실패해도 분석 결과는 반환
+        console.error('Failed to save history:', historyError.message)
+      }
     }
 
     res.json({
@@ -301,6 +325,153 @@ router.post('/opportunity-score', async (req, res, next) => {
     })
   } catch (error) {
     console.error('Opportunity score error:', error)
+    next(error)
+  }
+})
+
+/**
+ * GET /api/advanced/history/:keyword
+ * 키워드 히스토리 조회
+ */
+router.get('/history/:keyword', async (req, res, next) => {
+  try {
+    const { keyword } = req.params
+    const { days } = req.query
+
+    const history = await HistoryService.getKeywordHistory(
+      keyword,
+      days ? parseInt(days) : 90
+    )
+
+    res.json({
+      success: true,
+      data: history,
+      count: history.length,
+    })
+  } catch (error) {
+    console.error('Get history error:', error)
+    next(error)
+  }
+})
+
+/**
+ * GET /api/advanced/history/recent
+ * 최근 분석 키워드
+ */
+router.get('/history/recent/list', async (req, res, next) => {
+  try {
+    const { limit } = req.query
+
+    const keywords = await HistoryService.getRecentKeywords(
+      limit ? parseInt(limit) : 50
+    )
+
+    res.json({
+      success: true,
+      data: keywords,
+    })
+  } catch (error) {
+    console.error('Get recent keywords error:', error)
+    next(error)
+  }
+})
+
+/**
+ * GET /api/advanced/history/trend-change/:keyword
+ * 키워드 트렌드 변화 분석
+ */
+router.get('/history/trend-change/:keyword', async (req, res, next) => {
+  try {
+    const { keyword } = req.params
+
+    const trendChange = await HistoryService.analyzeKeywordTrendChange(keyword)
+
+    res.json({
+      success: true,
+      data: trendChange,
+    })
+  } catch (error) {
+    console.error('Analyze trend change error:', error)
+    next(error)
+  }
+})
+
+/**
+ * GET /api/advanced/stats
+ * 키워드 성과 통계
+ */
+router.get('/stats', async (req, res, next) => {
+  try {
+    const stats = await HistoryService.getKeywordStats()
+
+    res.json({
+      success: true,
+      data: stats,
+    })
+  } catch (error) {
+    console.error('Get stats error:', error)
+    next(error)
+  }
+})
+
+/**
+ * GET /api/advanced/top-performing
+ * 상위 성과 키워드
+ */
+router.get('/top-performing', async (req, res, next) => {
+  try {
+    const { limit } = req.query
+
+    const keywords = await HistoryService.getTopPerformingKeywords(
+      limit ? parseInt(limit) : 10
+    )
+
+    res.json({
+      success: true,
+      data: keywords,
+    })
+  } catch (error) {
+    console.error('Get top performing keywords error:', error)
+    next(error)
+  }
+})
+
+/**
+ * GET /api/advanced/most-searched
+ * 검색 빈도 높은 키워드
+ */
+router.get('/most-searched', async (req, res, next) => {
+  try {
+    const { limit } = req.query
+
+    const keywords = await HistoryService.getMostSearchedKeywords(
+      limit ? parseInt(limit) : 10
+    )
+
+    res.json({
+      success: true,
+      data: keywords,
+    })
+  } catch (error) {
+    console.error('Get most searched keywords error:', error)
+    next(error)
+  }
+})
+
+/**
+ * GET /api/advanced/daily-stats
+ * 일별 검색 통계
+ */
+router.get('/daily-stats', async (req, res, next) => {
+  try {
+    const stats = await HistoryService.getDailySearchStats()
+
+    res.json({
+      success: true,
+      data: stats,
+    })
+  } catch (error) {
+    console.error('Get daily stats error:', error)
     next(error)
   }
 })

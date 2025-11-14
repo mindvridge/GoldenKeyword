@@ -11,6 +11,10 @@ CREATE TABLE IF NOT EXISTS keyword_metrics (
   difficulty INTEGER,
   kgr DECIMAL(5,4),
   kei INTEGER,
+  allintitle INTEGER,              -- 실제 allintitle 검색 결과 수
+  serp_difficulty INTEGER,         -- SERP 난이도 (0-100)
+  trend VARCHAR(50),                -- 트렌드 (rising, stable, declining)
+  intent VARCHAR(50),               -- 키워드 의도 (informational, transactional, navigational)
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -31,6 +35,8 @@ CREATE TABLE IF NOT EXISTS saved_keywords (
 CREATE INDEX IF NOT EXISTS idx_keyword_text ON keyword_metrics(keyword_text);
 CREATE INDEX IF NOT EXISTS idx_user_keywords ON saved_keywords(user_id);
 CREATE INDEX IF NOT EXISTS idx_created_at ON keyword_metrics(created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_kgr ON keyword_metrics(kgr ASC);  -- KGR 낮은 순 조회 최적화
+CREATE INDEX IF NOT EXISTS idx_keyword_created ON keyword_metrics(keyword_text, created_at DESC);  -- 히스토리 조회 최적화
 
 -- 샘플 데이터 (선택사항)
 -- INSERT INTO saved_keywords (user_id, keyword, search_volume, difficulty, cpc, notes)

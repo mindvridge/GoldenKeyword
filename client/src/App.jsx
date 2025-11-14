@@ -17,6 +17,7 @@ import AdvancedSearchForm from './components/KeywordSearch/AdvancedSearchForm'
 import AdvancedKeywordTable from './components/DataTable/AdvancedKeywordTable'
 import PortfolioView from './components/Dashboard/PortfolioView'
 import HistoryDashboard from './components/Dashboard/HistoryDashboard'
+import PerformanceReport from './components/Reports/PerformanceReport'
 import StatsCards from './components/Dashboard/StatsCards'
 import TrendChart from './components/Charts/TrendChart'
 import KGRDistribution from './components/Charts/KGRDistribution'
@@ -124,6 +125,9 @@ function App() {
 
           {/* 히스토리 대시보드 */}
           <HistoryDashboard />
+
+          {/* 성과 분석 리포트 */}
+          <PerformanceReport />
         </Container>
       </Box>
     </ThemeProvider>

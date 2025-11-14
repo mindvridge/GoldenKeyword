@@ -11,6 +11,7 @@ import morgan from 'morgan'
 import dotenv from 'dotenv'
 import keywordRoutes from './routes/keywordRoutes.js'
 import advancedKeywordRoutes from './routes/advancedKeywordRoutes.js'
+import reportRoutes from './routes/reportRoutes.js'
 import { errorHandler } from './middleware/errorHandler.js'
 import { rateLimiter } from './middleware/rateLimiter.js'
 
@@ -43,6 +44,7 @@ app.get('/health', (req, res) => {
 // API 라우트
 app.use('/api/keywords', keywordRoutes)
 app.use('/api/advanced', advancedKeywordRoutes)
+app.use('/api/reports', reportRoutes)
 
 // 404 에러 핸들러
 app.use('*', (req, res) => {

@@ -13,8 +13,9 @@ import {
   FormControlLabel
 } from '@mui/material'
 import { Brightness4, Brightness7, Search as SearchIcon } from '@mui/icons-material'
-import SearchForm from './components/KeywordSearch/SearchForm'
-import KeywordTable from './components/DataTable/KeywordTable'
+import AdvancedSearchForm from './components/KeywordSearch/AdvancedSearchForm'
+import AdvancedKeywordTable from './components/DataTable/AdvancedKeywordTable'
+import PortfolioView from './components/Dashboard/PortfolioView'
 import StatsCards from './components/Dashboard/StatsCards'
 import TrendChart from './components/Charts/TrendChart'
 import KGRDistribution from './components/Charts/KGRDistribution'
@@ -24,6 +25,7 @@ function App() {
   const [darkMode, setDarkMode] = useState(false)
   const [keywords, setKeywords] = useState([])
   const [loading, setLoading] = useState(false)
+  const [portfolio, setPortfolio] = useState(null)
 
   // Material-UI 테마 설정 (다크 모드 지원)
   const theme = useMemo(
@@ -88,17 +90,23 @@ function App() {
           {/* 통계 카드 */}
           <StatsCards keywords={keywords} />
 
-          {/* 검색 폼 */}
+          {/* 고급 검색 폼 */}
           <Box sx={{ mt: 4 }}>
-            <SearchForm
-              onSearch={setKeywords}
+            <AdvancedSearchForm
+              onSearch={(kws, portfolioData) => {
+                setKeywords(kws)
+                setPortfolio(portfolioData)
+              }}
               onLoadingChange={setLoading}
             />
           </Box>
 
-          {/* 결과 테이블 */}
+          {/* 포트폴리오 뷰 */}
+          {portfolio && <PortfolioView portfolio={portfolio} />}
+
+          {/* 고급 결과 테이블 */}
           <Box sx={{ mt: 4 }}>
-            <KeywordTable
+            <AdvancedKeywordTable
               keywords={keywords}
               loading={loading}
             />
